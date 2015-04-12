@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jaxrs="http://cxf.apache.org/jaxrs" xmlns:jaxws="http://cxf.apache.org/jaxws" xmlns:cxf="http://cxf.apache.org/core"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
+http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
+http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
+http://www.springframework.org/schema/context
+http://www.springframework.org/schema/context/spring-context.xsd">
+
+<!-- CXF Configurations -->
+<import resource="classpath:META-INF/cxf/cxf.xml" />
+<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
+<import resource="classpath:META-INF/cxf/cxf-extension-soap.xml"/>
+<import resource="classpath:META-INF/cxf/cxf-extension-jaxrs-binding.xml" />
+	
+<context:component-scan base-package="com.test.*" />
+
+<!--  Rest Based Service -->
+<bean class="com.test.service.StudentResourceImpl" id="stuService"/>
+<bean class="com.test.service.AccountService" id="accountService"/>
+<bean class="com.test.service.ExceptionHanlder" id="exceptionHanlder"/>
+<bean class="com.test.service.RequestInterceptors" id="requestInterceptor"/>
+
+<!-- Soap Based Web Service -->
+<bean class="com.test.service.CreditReportImpl" id="creditReportService" />
+
+<jaxws:endpoint id="creditService"  implementor="#creditReportService"   address="/soap/creditService" />
+
+<bean class="com.test.service.EmployeeServiceImpl" id="empService" />
+
+<jaxws:endpoint id="employeeService"  implementor="#empService"   address="/soap/empService" />
+
+
+<jaxrs:server id="restServices" address="/">
+	<jaxrs:serviceBeans>
+		<ref bean="stuService" />
+		<ref bean="accountService" />
+	</jaxrs:serviceBeans>
+	<jaxrs:providers>
+		<ref bean="exceptionHanlder"/>
+		<ref bean="requestInterceptor"/>
+	</jaxrs:providers>
+</jaxrs:server>	
+
+</beans>
